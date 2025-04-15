@@ -19,7 +19,12 @@ export const MainNavigator = () => {
       tabBarStyle: {
         backgroundColor: theme === 'dark' ? '#181818' : '#ffffff',
       },
+      sceneStyle: {
+        backgroundColor: '#1f1f1f', // 动态设置页面背景颜色
+      },
+      headerShown: true,
     },
+    tabBar: undefined,
     screens: {
       Home: {
         screen: HomeScreen,
@@ -67,6 +72,10 @@ export const MainNavigator = () => {
   const RootStack = createNativeStackNavigator({
     screenOptions: {
       headerStyle: {backgroundColor: '#1f1f1f'},
+      headerTintColor: '#ffffff',
+      contentStyle: {
+        backgroundColor: '#1f1f1f', // 动态设置页面背景颜色
+      },
     },
     screens: {
       TabsScreens: {
@@ -75,6 +84,7 @@ export const MainNavigator = () => {
           headerShown: false,
         },
       },
+      File: ProfileScreen,
     },
   });
 

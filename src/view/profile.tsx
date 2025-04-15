@@ -1,25 +1,21 @@
+import { useNavigation } from '@react-navigation/native';
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import {View, Text, Button} from 'react-native';
+import {useSafeAreaInsets} from 'react-native-safe-area-context';
 
-const Profile: React.FC = (): React.JSX.Element => {
+const Profile: React.FC = (props): React.JSX.Element => {
+  const insets = useSafeAreaInsets();
+  console.log(props, 'navigation');
+  const navigation = useNavigation()
   return (
-    <View style={styles.container}>
-      <Text style={styles.text}>Profile Page</Text>
+    <View
+      style={{paddingTop: insets.top}}>
+      <Text>This is top text.</Text>
+      <Text>This is bottom text.</Text>
+      <Button title="Go to Profile" onPress={() => navigation.navigate('File')} />
     </View>
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#f5f5f5',
-  },
-  text: {
-    fontSize: 18,
-    color: '#333',
-  },
-});
 
 export default Profile;
