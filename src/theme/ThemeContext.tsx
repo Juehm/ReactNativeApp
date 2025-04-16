@@ -1,14 +1,16 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { Appearance } from 'react-native';
+import { Appearance, useColorScheme } from 'react-native';
+import themeConfig from './themeConfig';
 
 // 定义主题类型
-type Theme = 'light' | 'dark';
+type ThemeType = 'system' | 'light' | 'dark' | 'custom';
 
 // 定义 Context 的类型
 interface ThemeContextType {
-  theme: Theme;
-  toggleTheme: () => void;
+  themeType: ThemeType;
+  setThemeType: (type: ThemeType) => void;
+  appliedTheme: any;
 }
 
 // 创建 ThemeContext
@@ -19,29 +21,36 @@ const THEME_STORAGE_KEY = 'app_theme';
 
 // 提供 ThemeProvider
 export const ThemeProvider = ({ children }: { children: ReactNode }) => {
-  const systemTheme = Appearance.getColorScheme(); // 'light' 或 'dark'
-  const [theme, setTheme] = useState<Theme>(systemTheme || 'light'); // 默认主题为浅色
+  const systemColorScheme = useColorScheme(); // 获取系统颜色模式
+  const [themeType, setTheme] = useState<ThemeType>('system'); // 默认主题为系统主题
+  const [appliedTheme, setAppliedTheme] = useState<any>('system'); // 默认主题配置
 
   // 切换主题并持久化
-  const toggleTheme = async () => {
-    const newTheme = theme === 'light' ? 'dark' : 'light';
+  const setThemeType = async (newTheme: ThemeType) => {
     setTheme(newTheme);
     await AsyncStorage.setItem(THEME_STORAGE_KEY, newTheme); // 持久化主题
   };
+
+  // 根据 themeType 更新 appliedTheme
+  useEffect(() => {
+    const updateTheme = () => {
+      const key = themeType === 'system' ? Appearance.getColorScheme() as ThemeType : themeType;
+      setAppliedTheme(themeConfig[key] as any); // 更新主题配置
+    };
+    updateTheme();
+  }, [themeType, systemColorScheme]);
 
   // 初始化主题（从存储中加载）
   useEffect(() => {
     const loadTheme = async () => {
       const storedTheme = await AsyncStorage.getItem(THEME_STORAGE_KEY);
-      if (storedTheme) {
-        setTheme(storedTheme as Theme);
-      }
+      if (storedTheme) { setTheme(storedTheme as ThemeType); }
     };
     loadTheme();
   }, []);
 
   return (
-    <ThemeContext.Provider value={{ theme, toggleTheme }}>
+    <ThemeContext.Provider value={{ themeType, appliedTheme, setThemeType }}>
       {children}
     </ThemeContext.Provider>
   );
