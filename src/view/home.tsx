@@ -1,6 +1,7 @@
 import React from 'react';
-import { View, Text, Button, StyleSheet } from 'react-native';
+import { View, Text, Button } from 'react-native';
 import { useTheme } from '../provider/theme/ThemeContext';
+import { ScaledSheet } from 'react-native-size-matters';
 
 const HomeScreen = () => {
   const { themeType, setThemeType } = useTheme();
@@ -16,7 +17,7 @@ const HomeScreen = () => {
   );
 };
 
-const styles = StyleSheet.create({
+const styles = ScaledSheet.create({
   container: {
     flex: 1,
     justifyContent: 'center',
