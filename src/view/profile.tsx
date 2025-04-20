@@ -9,7 +9,7 @@ const Profile: React.FC = (props): React.JSX.Element => {
   const navigation = useNavigation()
   return (
     <View
-      style={{paddingTop: insets.top}}>
+      style={{ flex: 1, justifyContent: 'center', alignItems: 'center', paddingTop: insets.top}}>
       <Text>This is top text.</Text>
       <Text>This is bottom text.</Text>
       <Button title="Go to Profile" onPress={() => navigation.navigate('File')} />

@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, Button, StyleSheet } from 'react-native';
-import { useTheme } from '../theme/ThemeContext';
+import { useTheme } from '../provider/theme/ThemeContext';
 
 const HomeScreen = () => {
   const { themeType, setThemeType } = useTheme();
