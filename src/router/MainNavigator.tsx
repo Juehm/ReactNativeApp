@@ -12,10 +12,13 @@ import { useTheme } from '../provider/theme/ThemeContext';
 import { DrawerProvider } from '../provider/drawer/DrawerContext';
 import LinearGradient from 'react-native-linear-gradient';
 import { StyleSheet } from 'react-native';
+import { AuthProvider, useAuth } from '../provider/auth/AuthContext';
+import SignInScreen from '../view/signIn';
+import SplashScreen from '../view/splash';
 
 function GradientBackground() {
   console.log(StyleSheet.absoluteFillObject, 'StyleSheet.absoluteFillObject');
-  
+
   return (
     <LinearGradient
       start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }}
@@ -49,22 +52,48 @@ function MyTabs() {
 const Stack = createNativeStackNavigator();
 
 function RootStack() {
+  const { state } = useAuth();
   return (
     <Stack.Navigator>
-      <Stack.Screen name="TabScreen" component={MyTabs} options={{ headerShown: false }} />
-      <Stack.Screen name="File" component={SafeScreen} options={{ headerShown: false }} />
+      {state.isLoading ? (
+        // We haven't finished checking for the token yet
+        <Stack.Screen name="Splash" component={SplashScreen} />
+      ) : state.userToken == null ? (
+        // No token found, user isn't signed in
+        <>
+          <Stack.Screen
+            name="SignIn"
+            component={SignInScreen}
+            options={{
+              title: 'Sign in',
+              // When logging out, a pop animation feels intuitive
+              animationTypeForReplace: state.isSignout ? 'pop' : 'push',
+            }}
+          />
+        </>
+      ) : (
+        // User is signed in
+        <>
+          <Stack.Screen name="TabScreen" component={MyTabs} options={{ headerShown: false }} />
+          <Stack.Screen name="File" component={SafeScreen} options={{ headerShown: false }} />
+        </>
+      )}
+       <Stack.Group navigationKey={state.userToken ? 'user' : 'guest'}>
+    <Stack.Screen name="Help" component={HomeScreen} />
+  </Stack.Group>
     </Stack.Navigator>
   );
 }
 
-
 export const MainNavigator = () => {
   const { appliedTheme } = useTheme();
   return (
-    <NavigationContainer theme={appliedTheme}>
-      <DrawerProvider>
-        <RootStack />
-      </DrawerProvider>
-    </NavigationContainer>
+    <AuthProvider>
+      <NavigationContainer theme={appliedTheme}>
+        <DrawerProvider>
+          <RootStack />
+        </DrawerProvider>
+      </NavigationContainer>
+    </AuthProvider>
   );
 };
