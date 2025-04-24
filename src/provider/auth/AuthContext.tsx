@@ -1,5 +1,5 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import React, { ReactNode, useContext, useReducer, useEffect, useMemo } from 'react';
+import secureStorage from '../../utils/secureStorage';
 
 // 定义状态类型
 interface State {
@@ -64,8 +64,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   useEffect(() => {
     const bootstrapAsync = async () => {
       try {
-        const userToken = await AsyncStorage.getItem('userToken');
-        dispatch({ type: 'RESTORE_TOKEN', token: userToken });
+        // 从 Keychain 中获取令牌
+        const token = await secureStorage.getItem('userToken');
+        dispatch({ type: 'RESTORE_TOKEN', token });
       } catch (e) {
         console.error('Failed to restore token:', e);
       }
@@ -81,18 +82,18 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         console.log(data, 'signIn');
         // 模拟登录逻辑
         const token = 'dummy-auth-token';
-        await AsyncStorage.setItem('userToken', token);
+        await secureStorage.setItem('userToken', token); // 存储令牌到 Keychain
         dispatch({ type: 'SIGN_IN', token });
       },
       signOut: async () => {
-        await AsyncStorage.removeItem('userToken');
+        await secureStorage.removeItem('userToken'); // 删除 Keychain 中的令牌
         dispatch({ type: 'SIGN_OUT' });
       },
       signUp: async (data: any) => {
         console.log(data, 'signUp');
         // 模拟注册逻辑
         const token = 'dummy-auth-token';
-        await AsyncStorage.setItem('userToken', token);
+        await secureStorage.setItem('userToken', token); // 存储令牌到 Keychain
         dispatch({ type: 'SIGN_IN', token });
       },
     }),
