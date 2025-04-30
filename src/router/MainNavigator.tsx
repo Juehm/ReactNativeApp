@@ -1,4 +1,4 @@
-import { NavigationContainer } from '@react-navigation/native';
+import { LinkingOptions, NavigationContainer, ParamListBase, ParamListRoute } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import ThemeTestScreen from '../view/safe';
@@ -11,7 +11,7 @@ import React from 'react';
 import { useTheme } from '../provider/theme/ThemeContext';
 import { DrawerProvider } from '../provider/drawer/DrawerContext';
 import LinearGradient from 'react-native-linear-gradient';
-import { StyleSheet } from 'react-native';
+import { StyleSheet, Text } from 'react-native';
 import { AuthProvider, useAuth } from '../provider/auth/AuthContext';
 import SignInScreen from '../view/signIn';
 import SplashScreen from '../view/splash';
@@ -78,18 +78,63 @@ function RootStack() {
           <Stack.Screen name="File" component={SafeScreen} options={{ headerShown: false }} />
         </>
       )}
-       <Stack.Group navigationKey={state.userToken ? 'user' : 'guest'}>
-    <Stack.Screen name="Help" component={HomeScreen} />
-  </Stack.Group>
+      <Stack.Group navigationKey={state.userToken ? 'user' : 'guest'}>
+        <Stack.Screen name="Help" component={HomeScreen} />
+      </Stack.Group>
     </Stack.Navigator>
   );
 }
 
 export const MainNavigator = () => {
   const { appliedTheme } = useTheme();
+  const linking: any = {
+    prefixes: [
+      /* your linking prefixes */
+      'mychat://',
+      'https://mychat.com',
+      'https://*.mychat.com',
+    ],
+    filter: (url: string) => !url.includes('+expo-auth-session'),
+    config: {
+      /* configuration for matching screens with paths */
+      screens: {
+        TabScreen: {
+          screens: {
+            ThemeTestScreen: 'feed/:sort',
+          },
+        },
+        File: 'file',
+        Help: 'user',
+        // Profile1: {
+        //   path: 'user/:id/:section?',
+        //   parse: {
+        //     id: (id: string) => id.replace(/^@/, ''),
+        //   },
+        //   stringify: {
+        //     id: (id: string) => `@${id}`,
+        //   },
+        // },
+        // NotFound: {
+        //   path: '*',
+        // },
+
+      },
+    },
+    // getStateFromPath: (path, options) => {
+    //   console.log(path, options, 'getStateFromPath');
+
+    //   // Return a state object here
+    //   // You can also reuse the default logic by importing `getStateFromPath` from `@react-navigation/native`
+    // },
+    // getPathFromState(state, config) {
+    //   console.log(state, config, 'getStateFromPath');
+    //   // Return a path string here
+    //   // You can also reuse the default logic by importing `getPathFromState` from `@react-navigation/native`
+    // },
+  };
   return (
     <AuthProvider>
-      <NavigationContainer theme={appliedTheme}>
+      <NavigationContainer theme={appliedTheme} linking={linking} fallback={<Text>Loading...</Text>}>
         <DrawerProvider>
           <RootStack />
         </DrawerProvider>

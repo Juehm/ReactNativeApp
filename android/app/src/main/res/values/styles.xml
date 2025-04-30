@@ -5,7 +5,7 @@
     </style>
 
     <style name="BootTheme" parent="Theme.BootSplash.TransparentStatus">
-        <item name="darkContentBarsStyle">false</item>
+        <item name="darkContentBarsStyle">true</item>
 
         <item name="bootSplashBackground">@color/bootsplash_background</item>
         <item name="bootSplashLogo">@drawable/bootsplash_logo</item>
